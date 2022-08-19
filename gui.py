@@ -1,10 +1,14 @@
 import turtle
 import time
+from tkinter import *
 
 scn = turtle.Screen()
 scn.title(" ~ THE SUDOKU SOLVER ~ ")
 scn.setup(600, 600)
 scn.tracer(0)
+colchange = 0
+count = 0
+canvas = scn.getcanvas()
 
 test_pen = turtle.Turtle()
 test_pen.speed(0)
@@ -36,17 +40,50 @@ for i in range(9):
     for j in range(9):
         turtles[i][j] = turtle.Turtle()
 
-
 def move(x, y, my_pen):
     my_pen.pu()
     my_pen.goto(x, y)
     my_pen.pd()
 
 
+def change_theme(deff=None):
+
+    global colchange
+
+    if colchange % 2 == 0:
+
+        scn.bgcolor('black')
+        colchange += 1
+
+    else:
+        scn.bgcolor('white')
+        colchange += 1
+
+    if deff is None:
+        run()
+
 # To print the Grid Layout on the screen
-def layout(x, y):
+
+def theme_button():
+
+    button = Button(canvas.master, text="Theme", command=change_theme)
+    button.pack()
+    button.place(x=10, y=10)  # place the button anywhere on the screen
+
+def start_button():
+
+    button = Button(canvas.master, text="Start", command=run)
+    button.pack()
+    button.place(x=100, y=10)  # place the button anywhere on the screen
+
+def layout(x, y,col):
+
     scn.tracer(0)
     my_pen = turtle.Turtle()
+
+    if col % 2: my_pen.color('white')
+    else: my_pen.color('black')
+
     move(x, y, my_pen)
     my_pen.right(90)
 
@@ -83,7 +120,8 @@ def layout(x, y):
 
 # To Print the initial elements in the problem statement
 
-def my_board(brd, x, y):
+def my_board(brd, x, y,col):
+
     x += 30
     y += 10
     for i in range(9):
@@ -91,10 +129,16 @@ def my_board(brd, x, y):
         x = -195
         for j in range(9):
             if [i, j] in fixed:
-                turtles[i][j].color("black")
+
+                if col % 2:
+                    turtles[i][j].color("white")
+
+                else:
+                    turtles[i][j].color("black")
+
                 scn.tracer(0)
             else:
-                turtles[i][j].color("green")
+                turtles[i][j].color("blue")
             move(x, y, turtles[i][j])
             x += 50
             if brd[i][j] != 0:
@@ -111,10 +155,19 @@ def Solution(brd, x, y, row, column):
         x = -195
         for j in range(9):
             if [i, j] in fixed:
-                turtles[i][j].color("black")
+
+                if colchange % 2 == 0:
+
+                    turtles[i][j].color("black")
+
+                else:
+                    turtles[i][j].color('white')
+
                 scn.tracer(0)
             else:
+
                 turtles[i][j].color("blue")
+
             move(x, y, turtles[i][j])
             x += 50
             if brd[i][j] == 0:
@@ -171,14 +224,14 @@ def visualise(brd):
     for i in range(9):
         if check(brd, row, column, i + 1):
             brd[row][column] = i + 1
-            layout(pos_x, pos_y)
+            layout(pos_x, pos_y,colchange)
             Solution(brd, pos_x, pos_y, row, column)
 
             if visualise(brd):                                  # Recursive statement
                 return True
 
             brd[row][column] = 0
-            layout(pos_x, pos_y)
+            layout(pos_x, pos_y,colchange)
             Solution(brd, pos_x, pos_y, row, column)
     return False
 
@@ -190,24 +243,31 @@ def step():
     scn.clear()
     move(220, -280, test_pen)
     # test_pen.write("By Akshit", align="center", font=("Cooper Black", 11, "normal"))
-    layout(pos_x, pos_y)
-    my_board(board, pos_x, pos_y)
+    layout(pos_x, pos_y,colchange)
+    if colchange:scn.bgcolor('black')
+    my_board(board, pos_x, pos_y,colchange)
     test_pen.color("red")
     move(0, 260, test_pen)
     test_pen.write("Recursive Steps Taken = "+str(count), align="center", font=("Century", 15, "bold"))
+    #change_theme()
 
 
+def run():
 
-count = 0
-layout(pos_x, pos_y)
-my_board(board, pos_x, pos_y)
-move(220, -290, test_pen)
-# test_pen.write("By Akshit", align="center", font=("Cooper Black", 11, "normal"))
-move(0, 260, test_pen)
-test_pen.color("red")
-test_pen.write("Press 'SPACE BAR' to visualise the solution", align="center", font=("Century", 15, "bold"))
-test_pen.color("black")
+    #scn.clear()
+    layout(pos_x, pos_y,colchange)
+    my_board(board, pos_x, pos_y,colchange)
+    move(220, -290, test_pen)
+    # test_pen.write("By Akshit", align="center", font=("Cooper Black", 11, "normal"))
+    move(0, 260, test_pen)
+    test_pen.color("red")
+    test_pen.write("Press 'SPACE BAR' to visualise the solution", align="center", font=("Century", 15, "bold"))
+    test_pen.color("green")
+
+    scn.onkeypress(step, "space")
+
+theme_button()
+run()
+
 scn.listen()
-scn.onkeypress(step, "space")
-
 turtle.done()
