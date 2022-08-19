@@ -12,6 +12,8 @@ canvas = scn.getcanvas()
 
 test_pen = turtle.Turtle()
 test_pen.speed(0)
+done = False
+
 
 pos_x, pos_y = -225, 225
 
@@ -239,6 +241,8 @@ def visualise(brd):
 # To Trigger the 'visualise' function on key press
 
 def step():
+    global done
+
     visualise(board)
     scn.clear()
     move(220, -280, test_pen)
@@ -249,8 +253,8 @@ def step():
     test_pen.color("red")
     move(0, 260, test_pen)
     test_pen.write("Recursive Steps Taken = "+str(count), align="center", font=("Century", 15, "bold"))
+    done = True
     #change_theme()
-
 
 def run():
 
@@ -261,7 +265,11 @@ def run():
     # test_pen.write("By Akshit", align="center", font=("Cooper Black", 11, "normal"))
     move(0, 260, test_pen)
     test_pen.color("red")
-    test_pen.write("Press 'SPACE BAR' to visualise the solution", align="center", font=("Century", 15, "bold"))
+
+    if not done:
+
+        test_pen.write("Press 'SPACE BAR' to visualise the solution", align="center", font=("Century", 15, "bold"))
+
     test_pen.color("green")
 
     scn.onkeypress(step, "space")
